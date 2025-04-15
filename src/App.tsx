@@ -1,9 +1,12 @@
 import './App.css'
+import BigCalendar from './components/calendar/bigCalendar'
 
-function App() {
+export const App = () => {
 
   return (
-      <h1 className='text-orange-700'>Calendar Test</h1>
+    <>
+      <BigCalendar />
+    </>
   )
 }
 
