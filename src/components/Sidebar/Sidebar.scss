@@ -1,0 +1,17 @@
+.sidebar-header {
+  padding: 20px 26px;
+}
+
+.sidebar-list a {
+  padding-inline: 26px;
+}
+
+.sidebar-link:hover::after {
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 5px;
+  background-color: #A3A0FB;
+  top: 0;
+  left: 0;
+}
