@@ -53,10 +53,10 @@ export const ReminderModal: React.FC<ReminderModalProps> = ({
 
   if (position) {
     if (openUpwards) {
-      modalStyle.top = `${position.y - 10}px`;
+      modalStyle.top = `${position.y - 20}px`;
       modalStyle.transform = "translate(-50%, -100%)";
     } else {
-      modalStyle.top = `${position.y + 10}px`;
+      modalStyle.top = `${position.y + 20}px`;
       modalStyle.transform = "translate(-50%, 0)";
     }
     modalStyle.left = `${position.x}px`;
@@ -172,6 +172,7 @@ export const ReminderModal: React.FC<ReminderModalProps> = ({
           <input
             type="text"
             name="description"
+            className="italic"
             value={reminder.description}
             onChange={handleDescriptionChange}
             maxLength={100}
