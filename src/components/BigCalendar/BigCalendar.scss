@@ -13,6 +13,10 @@
     margin-right: 0;
   }
 
+  .rbc-day-slot .rbc-event {
+    border: none;
+  }
+
   .rbc-time-content,
   .rbc-day-bg,
   .rbc-timeslot-group {
@@ -39,7 +43,7 @@
       box-shadow: 0px 2px 3px #0000000D;;
       button {
         color: #4D4F5C;
-        padding: 8px 18px;
+        padding: 12px 18px;
         border: 1px solid #D7DAE2;
         &.rbc-active {
           box-shadow: none;
@@ -135,6 +139,9 @@
   }
 
   .rbc-agenda-view {
+    .rbc-agenda-content {
+      color: white;
+    }
     .rbc-agenda-table {
       border-color: var(--table-border);
       .rbc-header {
@@ -166,5 +173,10 @@
     .rbc-allday-cell {
       display: none;
     }
+  }
+}
+.custom-calendar.day-view  {
+  .rbc-event {
+    border-radius: 0;
   }
 }

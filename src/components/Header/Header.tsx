@@ -1,5 +1,5 @@
 import { Icon } from '@iconify/react';
-import { Settings, MessageCircle, Bell, ChevronDown } from 'lucide-react';
+import { LifeBuoy, MessageCircle, Bell, ChevronDown } from 'lucide-react';
 
 export const Header: React.FC = () => {
   return (
@@ -17,7 +17,7 @@ export const Header: React.FC = () => {
       <div className="header-left flex items-center">
         <div className="header-action flex gap-[30px] text-[#BCBCCB]">
           <div>
-            <Settings />
+            <LifeBuoy />
           </div>
           <div>
             <MessageCircle />

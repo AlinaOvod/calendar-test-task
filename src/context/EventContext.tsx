@@ -9,25 +9,20 @@ type EventsContextType = {
 export const EventsContext = createContext<EventsContextType | undefined>(undefined);
 
 export const EventsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
-
-  useEffect(() => {
+  const [events, setEvents] = useState<CalendarEvent[]>(() => {
     const storedEvents = localStorage.getItem('events');
-    console.log('storedEvents:', storedEvents);
     if (storedEvents) {
-      try {
-        const parsed = JSON.parse(storedEvents) as CalendarEvent[];
-        const parsedWithDates = parsed.map(event => ({
-          ...event,
-          start: new Date(event.start),
-          end: new Date(event.end),
-        }));
-        setEvents(parsedWithDates);
-      } catch (e) {
-        console.error('Error with parsing events:', e);
-      }
-    }
-  }, []);
+      const parsed = JSON.parse(storedEvents) as CalendarEvent[];
+      const parsedWithDates = parsed.map(event => ({
+        ...event,
+        start: new Date(event.start),
+        end: new Date(event.end),
+      }));
+
+      return parsedWithDates;
+    };
+    return [];
+  });
 
   useEffect(() => {
     localStorage.setItem('events', JSON.stringify(events));

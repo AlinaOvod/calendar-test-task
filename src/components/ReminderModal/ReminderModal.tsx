@@ -1,9 +1,9 @@
-import moment from 'moment';
-import './ReminderModal.scss'
+import moment from "moment";
+import "./ReminderModal.scss";
 import { CircleX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useClickOutside } from "../../hooks/useClickOutside";
-import { CalendarEvent } from '../../types/CalendarEventsType';
+import { CalendarEvent } from "../../types/CalendarEventsType";
 
 type ReminderModalProps = {
   isOpen: boolean;
@@ -11,7 +11,8 @@ type ReminderModalProps = {
   onSave: () => void;
   reminder: CalendarEvent;
   setReminder: React.Dispatch<React.SetStateAction<CalendarEvent>>;
-  mode: 'create' | 'edit';
+  onDiscard?: () => void;
+  mode: "create" | "edit";
   position: { x: number; y: number } | null;
 };
 
@@ -21,19 +22,21 @@ export const ReminderModal: React.FC<ReminderModalProps> = ({
   onSave,
   reminder,
   setReminder,
+  onDiscard,
   mode,
   position,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   useClickOutside(modalRef, onClose);
   const modalStyle: React.CSSProperties = {
-    borderRadius: '10px',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    borderRadius: "10px",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
   };
 
   const [openUpwards, setOpenUpwards] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (position && modalRef.current) {
@@ -50,26 +53,32 @@ export const ReminderModal: React.FC<ReminderModalProps> = ({
 
   if (position) {
     if (openUpwards) {
-      modalStyle.top = `${position.y - 10}px`; 
-      modalStyle.transform = 'translate(-50%, -100%)';
+      modalStyle.top = `${position.y - 10}px`;
+      modalStyle.transform = "translate(-50%, -100%)";
     } else {
       modalStyle.top = `${position.y + 10}px`;
-      modalStyle.transform = 'translate(-50%, 0)';
+      modalStyle.transform = "translate(-50%, 0)";
     }
     modalStyle.left = `${position.x}px`;
   }
 
   if (!isOpen) return null;
 
-  // if (position) {
-  //   modalStyle.top = `${position.y + 10}px`;
-  //   modalStyle.left = `${position.x}px`;
-  //   modalStyle.transform = 'translate(-50%, 0)';
-  // }
-
-
+  const handleSave = () => {
+    if (!reminder.title) {
+      setError("Event title is required.");
+      return;
+    }
+    setError(null); 
+    onSave();
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setReminder({ ...reminder, [name]: value });
+  };
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setReminder({ ...reminder, [name]: value });
   };
@@ -87,7 +96,7 @@ export const ReminderModal: React.FC<ReminderModalProps> = ({
   };
 
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const [hours, minutes] = e.target.value.split(':');
+    const [hours, minutes] = e.target.value.split(":");
     const updatedStart = new Date(reminder.start);
     updatedStart.setHours(parseInt(hours, 10));
     updatedStart.setMinutes(parseInt(minutes, 10));
@@ -109,6 +118,7 @@ export const ReminderModal: React.FC<ReminderModalProps> = ({
       className="reminder-modal flex flex-col gap-10 text-[#6A6996] fixed w-1/5 max-w-72 top-1/2 left-1/2 p-6 bg-white p-5 border border-[#43425D] z-50 shadow-xl"
       style={modalStyle}
       onClick={stopPropagation}
+      onMouseDown={stopPropagation}
     >
       {!openUpwards ? (
         <div className="arrow-up absolute top-[-10px] left-1/2 transform -translate-x-1/2" />
@@ -116,8 +126,8 @@ export const ReminderModal: React.FC<ReminderModalProps> = ({
         <div className="arrow-down absolute bottom-[-10px] left-1/2 transform -translate-x-1/2" />
       )}
       <div className="flex flex-col gap-5 text-[#D6D6D6]">
-        <label className="border-b border-[#D6D6D6] flex flex-col">
-          event name
+        <label className={`${error ? 'border-red-600' : 'border-[#D6D6D6]'} border-b flex flex-col`}>
+          <span className={`${error && 'text-red-600'} text-[11px] leading-5`}>event name</span>
           <input
             type="text"
             name="title"
@@ -127,25 +137,25 @@ export const ReminderModal: React.FC<ReminderModalProps> = ({
           />
         </label>
         <label className="border-b border-[#D6D6D6] flex flex-col">
-          event name
+          <span className="text-[11px] leading-5">event data</span>
           <input
             type="date"
             name="start"
-            value={moment(reminder.start).format('YYYY-MM-DD')}
+            value={moment(reminder.start).format("YYYY-MM-DD")}
             onChange={handleDateChange}
           />
         </label>
         <label className="border-b border-[#D6D6D6] flex flex-col">
-          event time
+          <span className="text-[11px] leading-5">event time</span>
           <input
             type="time"
             name="start"
-            value={moment(reminder.start).format('HH:mm')}
+            value={moment(reminder.start).format("HH:mm")}
             onChange={handleTimeChange}
           />
         </label>
         <label className="flex justify-between">
-          event color:
+          <span className="text-[11px] leading-5">event color</span>
           <span
             className="w-6 h-6 rounded-full"
             style={{ backgroundColor: reminder.color }}
@@ -157,12 +167,37 @@ export const ReminderModal: React.FC<ReminderModalProps> = ({
             className="opacity-0 absolute cursor-pointer "
           />
         </label>
+        <label className="border-b border-[#D6D6D6] flex flex-col">
+          <span className="text-[11px] leading-5">notes</span>
+          <input
+            type="text"
+            name="description"
+            value={reminder.description}
+            onChange={handleDescriptionChange}
+            maxLength={100}
+          />
+        </label>
       </div>
       <div className="flex justify-between">
-        <button className={`${mode !== 'create' ? 'uppercase' : ''} text-red-600`} onClick={onClose}>{mode === 'create' ? 'Cancel' : 'Discard'}</button>
-        <button className={`${mode !== 'create' ? 'uppercase' : ''}`} onClick={onSave}>{mode === 'create' ? 'Save' : 'Edit'}</button>
+        <button
+          className={`${mode !== "create" ? "uppercase" : ""} text-red-600`}
+          onClick={mode === "create" ? onClose : onDiscard}
+        >
+          {mode === "create" ? "Cancel" : "Discard"}
+        </button>
+        <button
+          className={`${mode !== "create" ? "uppercase" : ""}`}
+          onClick={handleSave}
+        >
+          {mode === "create" ? "Save" : "Edit"}
+        </button>
       </div>
-      <button className="text-[#D6D6D6] absolute top-2 right-2" onClick={onClose}><CircleX /></button>
+      <button
+        className="text-[#D6D6D6] absolute top-2 right-2"
+        onClick={onClose}
+      >
+        <CircleX />
+      </button>
     </div>
   );
 };

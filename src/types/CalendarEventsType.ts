@@ -4,4 +4,5 @@ export type CalendarEvent = {
   end: Date;
   color: string;
   allDay?: boolean;
+  description?: string;
 };
