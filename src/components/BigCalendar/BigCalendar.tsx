@@ -1,33 +1,31 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Calendar, momentLocalizer, Event, View } from 'react-big-calendar';
 import moment from 'moment';
 import withDragAndDrop, { EventInteractionArgs } from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './BigCalendar.scss';
+import { ReminderModal } from '../ReminderModal/ReminderModal';
+import { useEvents } from '../../hooks/useEvents';
+import { CalendarEvent } from '../../types/CalendarEventsType';
 
 const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop<CalendarEvent, Event>(Calendar);
 
-type CalendarEvent = {
-  title: string;
-  start: Date;
-  end: Date;
-  color: string;
-  allDay?: boolean;
-};
-
-const BigCalendar = () => {
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
+const BigCalendar: React.FC = () => {
+  const { events, setEvents } = useEvents();
+  // const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [currentView, setCurrentView] = useState<View>('month');
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newReminder, setNewReminder] = useState<CalendarEvent>({
+  const [clickPosition, setClickPosition] = useState<{ x: number; y: number } | null>(null);
+  const initialReminder: CalendarEvent = {
     title: '',
     start: new Date(),
     end: new Date(),
     color: '#3B86FF',
-  });
-
+  }
+  const [newReminder, setNewReminder] = useState<CalendarEvent>(initialReminder);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editedReminder, setEditedReminder] = useState({
@@ -36,6 +34,14 @@ const BigCalendar = () => {
     end: new Date(),
     color: '#add8e6',
   });
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      setClickPosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener('click', handleClick);
+    return () => window.removeEventListener('click', handleClick);
+  }, []);
 
   const handleSelectEvent = (event: CalendarEvent) => {
     setSelectedEvent(event);
@@ -48,15 +54,6 @@ const BigCalendar = () => {
     setSelectedEvent(null);
   };
 
-  const handleEditInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setEditedReminder({ ...editedReminder, [name]: value });
-  };
-
-  const handleEditColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEditedReminder({ ...editedReminder, color: event.target.value });
-  };
-
   const handleSaveEditedReminder = () => {
     const updatedEvents = events.map((ev) =>
       ev === selectedEvent ? editedReminder : ev
@@ -66,27 +63,18 @@ const BigCalendar = () => {
   };
 
   const onView = useCallback((newView: View) => setCurrentView(newView), [setCurrentView]);
-
+  const onNavigate = useCallback((date: Date) => setCurrentDate(date), [setCurrentDate]);
   const handleOpenModal = (slotInfo: { start: Date; end: Date }) => {
     setNewReminder({
-      ...newReminder,
+      ...initialReminder,  
       start: slotInfo.start,
-      end: slotInfo.end,
+      end: slotInfo.end
     });
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewReminder({ ...newReminder, [name]: value });
-  };
-
-  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewReminder({ ...newReminder, color: e.target.value });
   };
 
   const handleAddReminder = () => {
@@ -121,11 +109,13 @@ const BigCalendar = () => {
   };
 
   return (
-    <div style={{ height: '70vh', minHeight:'700px' }}>
+    <div style={{ height: '70vh', minHeight:'700px', minWidth: '800px' }} className={`custom-calendar ${currentView === 'week' ? 'week-view' : ''} ${currentView === 'day' ? 'day-view' : ''}`}>
       <DnDCalendar
         defaultDate={moment().toDate()}
         defaultView="month"
         view={currentView}
+        date={currentDate}
+        onNavigate={onNavigate}
         onView={onView}
         localizer={localizer}
         events={events as CalendarEvent[]}
@@ -145,130 +135,27 @@ const BigCalendar = () => {
       />
 
       {isModalOpen && (
-        <div className='fixed top-1/2 left-1/2 bg-white p-5 border border-1 border-gray-400 rounded z-50 shadow'
-          style={{
-            transform: 'translate(-50%, -50%)',
-          }}
-        >
-          <h2>Add New Reminder</h2>
-          <label>
-            Text (max 30 chars):
-            <input
-              type="text"
-              name="title"
-              value={newReminder.title ? newReminder.title : ''}
-              placeholder='Title'
-              onChange={handleInputChange}
-              maxLength={30}
-            />
-          </label>
-          <label>
-            Date:
-            <input
-              type="date"
-              name="start"
-              value={moment(newReminder.start).format('YYYY-MM-DD')}
-              onChange={(e) => {
-                const selectedDate = new Date(e.target.value);
-                const updatedStart = new Date(newReminder.start);
-                updatedStart.setFullYear(
-                  selectedDate.getFullYear(),
-                  selectedDate.getMonth(),
-                  selectedDate.getDate()
-                );
-              
-                const updatedEnd = new Date(updatedStart.getTime());
-              
-                setNewReminder({ ...newReminder, start: updatedStart, end: updatedEnd });
-              }}
-            />
-          </label>
-          <label>
-            Time:
-            <input
-              type="time"
-              name="start"
-              value={moment(newReminder.start).format('HH:mm')}
-              onChange={(e) => {
-                const [hours, minutes] = e.target.value.split(':');
-                const updatedStart = new Date(newReminder.start);
-                updatedStart.setHours(parseInt(hours, 10));
-                updatedStart.setMinutes(parseInt(minutes, 10));
-              
-                const updatedEnd = new Date(updatedStart.getTime());
-              
-                setNewReminder({ ...newReminder, start: updatedStart, end: updatedEnd });
-              }}
-            />
-          </label>
-          <label>
-            Color:
-            <input type="color" value={newReminder.color} onChange={handleColorChange} />
-          </label>
-          <button onClick={handleAddReminder}>Add Reminder</button>
-          <button onClick={handleCloseModal}>Cancel</button>
-        </div>
+        <ReminderModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onSave={handleAddReminder}
+          reminder={newReminder}
+          setReminder={setNewReminder}
+          mode="create"
+          position={clickPosition}
+        />
       )}
 
       {isEditModalOpen && selectedEvent && (
-        <div>
-          <h2>Edit Reminder</h2>
-          <label>
-            Text (max 30 chars):
-            <input
-              type="text"
-              name="title"
-              value={editedReminder.title}
-              onChange={handleEditInputChange}
-              maxLength={30}
-            />
-          </label>
-          <label>
-            Date:
-            <input
-              type="date"
-              name="start"
-              value={moment(editedReminder.start).format('YYYY-MM-DD')}
-              onChange={(e) => {
-                const selectedDate = new Date(e.target.value);
-                const updatedStart = new Date(editedReminder.start);
-                updatedStart.setFullYear(
-                  selectedDate.getFullYear(),
-                  selectedDate.getMonth(),
-                  selectedDate.getDate()
-                );
-              
-                const updatedEnd = new Date(updatedStart.getTime());
-              
-                setEditedReminder({ ...newReminder, start: updatedStart, end: updatedEnd });
-              }}
-            />
-          </label>
-          <label>
-            Time:
-            <input
-              type="time"
-              name="start"
-              value={moment(editedReminder.start).format('HH:mm')}
-              onChange={(e) => {
-                const [hours, minutes] = e.target.value.split(':');
-                const updatedStart = new Date(newReminder.start);
-                updatedStart.setHours(parseInt(hours, 10));
-                updatedStart.setMinutes(parseInt(minutes, 10));
-              
-                const updatedEnd = new Date(updatedStart.getTime());
-              
-                setEditedReminder({ ...newReminder, start: updatedStart, end: updatedEnd });
-              }}
-            /> 
-          </label>
-          <label>
-            Color:
-            <input type="color" value={editedReminder.color} onChange={handleEditColorChange} />
-          </label>
-          <button onClick={handleSaveEditedReminder}>Save Changes</button>
-          <button onClick={handleCloseEditModal}>Cancel</button>
-        </div>
+        <ReminderModal
+          isOpen={isEditModalOpen}
+          onClose={handleCloseEditModal}
+          onSave={handleSaveEditedReminder}
+          reminder={editedReminder}
+          setReminder={setEditedReminder}
+          mode="edit"
+          position={clickPosition}
+        />
       )}
     </div>
   );

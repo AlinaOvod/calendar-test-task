@@ -31,7 +31,10 @@ export const Header: React.FC = () => {
           <div className="ml-5 w-[1px] rounded h-6 bg-[#BCBCCB]"></div>
           <p className="ml-3 capitalize text-[#4D4F5C]">John Doe</p>
           <ChevronDown />
-          <div className="ml-5 w-9 h-9 bg-[#FFC06A] rounded-full"></div>
+          <img
+            src="https://randomuser.me/api/portraits/men/73.jpg"
+            className="ml-3 w-9 h-9 rounded-full object-cover"
+          />
         </div>
       </div>
     </div>

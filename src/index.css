@@ -35,15 +35,6 @@ button {
   font-size: 1rem;
   cursor: pointer;
   border: none;
-  padding: 0.5rem 1rem;
-  background-color: var(--color-accent);
-  color: white;
-  border-radius: 4px;
-  transition: background-color 0.2s ease-in-out;
-}
-
-button:hover {
-  background-color: #0056b3;
 }
 
 input {

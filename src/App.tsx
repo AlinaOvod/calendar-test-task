@@ -16,7 +16,7 @@ export const App = () => {
         <Header />
         <div className='main-wrapper px-[70px] py-8 bg-[#F0F0F7] flex-1'>
           <h1 className='text-2xl capitalize mb-8'>{currentPage}</h1>
-          <div className='content-wrapper p-[20px] bg-white shadow'>
+          <div className='content-wrapper overflow-auto p-[20px] bg-white shadow'>
             <Outlet />
           </div>
         </div>
