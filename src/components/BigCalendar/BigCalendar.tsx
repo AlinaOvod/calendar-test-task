@@ -91,11 +91,16 @@ const BigCalendar: React.FC = () => {
   };
 
   const handleOpenModal = (slotInfo: { start: Date; end: Date }) => {
+    const defaultDuration = 60 * 60 * 1000; 
+    const newEnd = new Date(slotInfo.start.getTime() + defaultDuration);
+    // const endOfDay = new Date(slotInfo.start);
+    // endOfDay.setHours(23, 59, 59, 999);
+
     setNewReminder({
       ...initialReminder,
       id: generateUniqueId(), 
       start: slotInfo.start,
-      end: slotInfo.end
+      end: newEnd
     });
     setIsModalOpen(true);
   };
