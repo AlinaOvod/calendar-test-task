@@ -10,6 +10,7 @@ import { useEvents } from '../../hooks/useEvents';
 import { CalendarEvent } from '../../types/CalendarEventsType';
 import { useSearchParams } from 'react-router-dom';
 import { getSearchWith, SearchParams } from '../../utils/getSearchWith';
+import { generateUniqueId } from '../../utils/getUniqueId';
 
 const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop<CalendarEvent, Event>(Calendar);
@@ -22,6 +23,7 @@ const BigCalendar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clickPosition, setClickPosition] = useState<{ x: number; y: number } | null>(null);
   const initialReminder: CalendarEvent = {
+    id: 0,
     title: '',
     start: new Date(),
     end: new Date(),
@@ -32,6 +34,7 @@ const BigCalendar: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editedReminder, setEditedReminder] = useState({
+    id: 0,
     title: '',
     start: new Date(),
     end: new Date(),
@@ -75,21 +78,22 @@ const BigCalendar: React.FC = () => {
 
   const handleSaveEditedReminder = () => {
     const updatedEvents = events.map((ev) =>
-      ev === selectedEvent ? editedReminder : ev
+      ev.id === selectedEvent?.id ? editedReminder : ev
     );
     setEvents(updatedEvents);
     handleCloseEditModal();
   };
 
   const handleDiscardEditedReminder = () => {
-    const updatedEvents = events.filter((ev) => ev !== selectedEvent);
+    const updatedEvents = events.filter((ev) => ev.id !== selectedEvent?.id);
     setEvents(updatedEvents);
     handleCloseEditModal();
   };
 
   const handleOpenModal = (slotInfo: { start: Date; end: Date }) => {
     setNewReminder({
-      ...initialReminder,  
+      ...initialReminder,
+      id: generateUniqueId(), 
       start: slotInfo.start,
       end: slotInfo.end
     });
@@ -150,7 +154,7 @@ const BigCalendar: React.FC = () => {
         onEventResize={onEventResize}
         resizable
         eventPropGetter={(event: CalendarEvent) => {
-          const isSelected = selectedEvent && selectedEvent.title === event.title;
+          const isSelected = selectedEvent && selectedEvent.id === event.id;
         
           return {
             style: {
