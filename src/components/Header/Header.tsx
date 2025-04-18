@@ -1,9 +1,10 @@
 import { Icon } from '@iconify/react';
 import { LifeBuoy, MessageCircle, Bell, ChevronDown } from 'lucide-react';
+import './Header.scss';
 
 export const Header: React.FC = () => {
   return (
-    <div className="header h-[70px] bg-white px-[20px] py-4 flex items-center justify-between shadow-">
+    <div className="header fixed h-[70px] bg-white px-[20px] py-4 flex items-center justify-between shadow-">
       <div className="header-search w-2/5">
         <label className="flex items-center gap-[10px]">
           <Icon icon="mdi:magnify" className="text-[#BCBCCB] text-2xl" />
