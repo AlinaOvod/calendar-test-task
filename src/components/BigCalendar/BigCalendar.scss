@@ -180,7 +180,7 @@
 
 .custom-calendar.week-view  {
   .rbc-time-view {
-    .rbc-allday-cell {
+    .rbc-allday-cell:not(:has(.rbc-event)) {
       display: none;
     }
   }
