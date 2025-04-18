@@ -45,8 +45,7 @@ const BigCalendar: React.FC = () => {
   const currentView: View = isValidView(viewParam!) ? viewParam : 'month';
 
   useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      console.log('Window clicked', e.clientX, e.clientY); 
+    const handleClick = (e: MouseEvent) => { 
       setClickPosition({ x: e.clientX, y: e.clientY });
     };
     window.addEventListener('mousedown', handleClick);
@@ -116,7 +115,6 @@ const BigCalendar: React.FC = () => {
       existingEvent === event ? { ...event, start: newStart, end: newEnd } : existingEvent
     );
     setEvents(updatedEvents);
-    console.log('onEventDrop', { event, start, end });
   };
 
   const onEventResize: (args: EventInteractionArgs<CalendarEvent>) => void = (args) => {
@@ -129,12 +127,12 @@ const BigCalendar: React.FC = () => {
       existingEvent === event ? { ...event, start: newStart, end: newEnd } : existingEvent
     );
     setEvents(updatedEvents);
-    console.log('onEventResize', { event, start, end });
   };
 
   return (
-    <div style={{ height: '70vh', minHeight:'700px', minWidth: '800px' }} className={`custom-calendar ${currentView === 'week' ? 'week-view' : ''} ${currentView === 'day' ? 'day-view' : ''}`}>
+    <div style={{ height: '70vh', minHeight:'400px', minWidth: '600px' }} className={`custom-calendar ${currentView === 'week' ? 'week-view' : ''} ${currentView === 'day' ? 'day-view' : ''}`}>
       <DnDCalendar
+        key={selectedEvent ? selectedEvent.title : 'no-selection'} 
         defaultDate={moment().toDate()}
         defaultView="month"
         view={currentView}
@@ -151,11 +149,21 @@ const BigCalendar: React.FC = () => {
         onEventDrop={onEventDrop}
         onEventResize={onEventResize}
         resizable
-        eventPropGetter={(event: CalendarEvent) => ({
-          style: {
-            backgroundColor: event.color,
-          },
-        })}
+        eventPropGetter={(event: CalendarEvent) => {
+          const isSelected = selectedEvent && selectedEvent.title === event.title;
+        
+          return {
+            style: {
+              backgroundColor: event.color,
+              ...(isSelected && {
+                backgroundColor: 'white',
+                border: `2px solid ${event.color}`,
+                color: event.color,
+                boxShadow: 'inset 0px 3px 6px #00000032',
+              }),
+            },
+          };
+        }}
       />
 
       {isModalOpen && (

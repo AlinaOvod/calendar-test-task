@@ -43,7 +43,7 @@
       box-shadow: 0px 2px 3px #0000000D;;
       button {
         color: #4D4F5C;
-        padding: 12px 18px;
+        padding: 8px 16px;
         border: 1px solid #D7DAE2;
         &.rbc-active {
           box-shadow: none;
@@ -136,6 +136,12 @@
       background-color: white;
       color: #c6c6ca;
     }
+
+    .rbc-date-cell {
+      .rbc-button-link {
+        font-size: 14px;
+      }
+    }
   }
 
   .rbc-agenda-view {
@@ -165,6 +171,10 @@
     height: 12px;
     background-color: var(--color-accent);
     border-radius: 100px;
+  }
+
+  .rbc-event.rbc-selected {
+    background-color: var(--main-bg-color) !important;
   }
 }
 

@@ -10,11 +10,11 @@
 
 body {
   font-family: var(--font-main);
-  background-color: var(--color-bg);
+  background-color: #F0F0F7;
   color: var(--color-text);
   line-height: 1.5;
   font-weight: 400;
-  font-size: 16px;
+  font-size: 14px;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
@@ -32,7 +32,7 @@ a {
 
 button {
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 12px;
   cursor: pointer;
   border: none;
 }

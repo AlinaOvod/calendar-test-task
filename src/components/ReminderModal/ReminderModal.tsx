@@ -115,7 +115,7 @@ export const ReminderModal: React.FC<ReminderModalProps> = ({
   return (
     <div
       ref={modalRef}
-      className="reminder-modal flex flex-col gap-10 text-[#6A6996] fixed w-1/5 max-w-72 top-1/2 left-1/2 p-6 bg-white p-5 border border-[#43425D] z-50 shadow-xl"
+      className="reminder-modal flex flex-col gap-10 text-[#6A6996] fixed w-1/5 max-w-60 top-1/2 left-1/2 p-6 bg-white p-5 border border-[#43425D] z-50 shadow-xl"
       style={modalStyle}
       onClick={stopPropagation}
       onMouseDown={stopPropagation}
@@ -125,7 +125,7 @@ export const ReminderModal: React.FC<ReminderModalProps> = ({
       ) : (
         <div className="arrow-down absolute bottom-[-10px] left-1/2 transform -translate-x-1/2" />
       )}
-      <div className="flex flex-col gap-5 text-[#D6D6D6]">
+      <div className="flex flex-col gap-2 text-xs text-[#D6D6D6]">
         <label className={`${error ? 'border-red-600' : 'border-[#D6D6D6]'} border-b flex flex-col`}>
           <span className={`${error && 'text-red-600'} text-[11px] leading-5`}>event name</span>
           <input
@@ -137,7 +137,7 @@ export const ReminderModal: React.FC<ReminderModalProps> = ({
           />
         </label>
         <label className="border-b border-[#D6D6D6] flex flex-col">
-          <span className="text-[11px] leading-5">event data</span>
+          <span className="text-[9px] leading-5">event data</span>
           <input
             type="date"
             name="start"
@@ -146,7 +146,7 @@ export const ReminderModal: React.FC<ReminderModalProps> = ({
           />
         </label>
         <label className="border-b border-[#D6D6D6] flex flex-col">
-          <span className="text-[11px] leading-5">event time</span>
+          <span className="text-[9px] leading-5">event time</span>
           <input
             type="time"
             name="start"
@@ -154,10 +154,10 @@ export const ReminderModal: React.FC<ReminderModalProps> = ({
             onChange={handleTimeChange}
           />
         </label>
-        <label className="flex justify-between">
-          <span className="text-[11px] leading-5">event color</span>
+        <label className="flex justify-between mt-2">
+          <span className="text-[9px] leading-5">event color</span>
           <span
-            className="w-6 h-6 rounded-full"
+            className="w-5 h-5 rounded-full"
             style={{ backgroundColor: reminder.color }}
           />
           <input
@@ -168,7 +168,7 @@ export const ReminderModal: React.FC<ReminderModalProps> = ({
           />
         </label>
         <label className="border-b border-[#D6D6D6] flex flex-col">
-          <span className="text-[11px] leading-5">notes</span>
+          <span className="text-[9px] leading-5">notes</span>
           <input
             type="text"
             name="description"
@@ -193,7 +193,7 @@ export const ReminderModal: React.FC<ReminderModalProps> = ({
         </button>
       </div>
       <button
-        className="text-[#D6D6D6] absolute top-2 right-2"
+        className="text-[#D6D6D6] absolute top-2 right-2 hover:text-red-600 transition"
         onClick={onClose}
       >
         <CircleX />

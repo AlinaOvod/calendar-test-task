@@ -6,7 +6,7 @@
   padding-inline: 26px;
 }
 
-.sidebar-link:hover::after {
+.is-active.sidebar-link::after {
   content: "";
   position: absolute;
   height: 100%;
